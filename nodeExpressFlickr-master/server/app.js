@@ -36,54 +36,70 @@ app.use(express.static(path.resolve(__dirname, '..', 'build')));
 
 // Searches Flickr for a specific query
 app.get('/flickr/:query', function (req, res) {
+
+
 	console.log("Flickr call query=" + req.params['query'] );
 	getApiKeys((api_key, api_secret) => {
 		const Flickr = require("flickrapi"),
-	    flickrOptions = {
-	      api_key: api_key.trim(),
-	      secret: api_secret.trim()
-	    };
-	    console.log(api_key);
-	    console.log(api_secret);
+		flickrOptions = {
+			api_key: api_key.trim(),
+			secret: api_secret.trim()
+		};
+		console.log(api_key);
+		console.log(api_secret);
 		Flickr.tokenOnly(flickrOptions, function(error, flickr) {
 			console.log("tokenOnly");
 			if (error) {
 				res.send(error);
 				return;
 			}
-		  // we can now use "flickr" as our API object,
-		  // but we can only call public methods and access public data
-for (var i = 0; i < color.length; i++) {
-	flickr.photos.search({
-		safe:1,
-		sort:"relevance",
-		text:req.params["query"] + color[i]
-	}, (err, data) => {
-		if (err) res.send(err);
-		console.log("Got flickr data sending it");
-		res.send(data);
-	});}
+			var agregado =0;
 
+			// we can now use "flickr" as our API object,
+			// but we can only call public methods and access public data
+			function retorno(mypPhotosToLook,callback){
+				var something = [];
+				for (var i = 0; i < color.length; i++) {
+					console.log("Indice i "+i);
 
+					var devolver =  interna(i,function(picReturn){
+						return callback(picReturn);
+					});
+					function interna (i,call){
+						flickr.photos.search({
+							safe:1,
+							sort:"relevance",
+							text:(req.params["query"]+ '_' +color[i]),
+						}, (err, data) => {
+							if (err) res.send(err);
 
+							for (var j = 0; j < 3; j++) {
+								agregado=	agregado+1;
+								something.push(	data.photos.photo[j])	;
+								if (agregado === 21 &&  j +1===3)
+								{
+									mypPhotosToLook=something;
+									return call (mypPhotosToLook);
+								}
+							}
+						});
+					}
+				}			}
+				var picReturn = [];
+				var devolver =  retorno({},function(picReturn){
+					console.log("Enviando " + picReturn);
+					console.log("SOMEthing ");
 
+					res.send(picReturn) ;
+				});
+				//}
+			});
 
-		});
-
-	}, (err) => {
-		console.log(err);
-		res.send("Error!");
-	})
-});
-
-
-
-
-
-
-
-
-
+		}, (err) => {
+			console.log(err);
+			res.send("Error!");
+		})
+	});
 
 // Always return the main index.html, so react-router render the route in the client
 app.get('*', (req, res) => {
