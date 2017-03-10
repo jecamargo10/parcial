@@ -31,7 +31,7 @@ class App extends Component {
   handleSubmit(event) {
     console.log("ENTRO");
     toSearch=this.state.value;
-    lastRecentResearch=toSearch;
+    lastRecentResearch=toSearch
     this.getPics();
     event.preventDefault();
 
@@ -76,25 +76,20 @@ this.setState({ pics: (response.data) });
            </form>
            </div>
 
-
-
-           <Grid>
-             <Row>
+           <div class="row">
+            <div class="col-md-4">
   {this.state.pics.map(pic => {
-return(  
-
-  <Col xs={6} md={3}>
-   <Thumbnail href="#" alt="171x180" src={'https://farm' + pic.farm+'.staticflickr.com/'+pic.server+'/'+pic.id+'_'+pic.secret+'_m.jpg'} />
- </Col>
+return(   <div class="thumbnail">
+    <img src={'https://farm' + pic.farm+'.staticflickr.com/'+pic.server+'/'+pic.id+'_'+pic.secret+'_m.jpg'} alt="boohoo"  style={{width: 20 + '%'}}  className="img-responsive"/>
+    </div>
 );
-
 
             })}
 
 
+            </div>
+           </div>
 
-            </Row>
-          </Grid>
 
 
 
